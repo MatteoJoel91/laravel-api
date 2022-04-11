@@ -14,6 +14,14 @@
                 </div>
             </div>
         </div>
+
+        <nav class="my-4">
+            <ul class="pagination">
+                <li class="page-item mr-2 cursore" :class="(currentPage == 1) ? 'disabled' : '' " ><span class="page-link" @click="getPosts(currentPage - 1)">Precedente</span></li>
+
+                <li class="page-item cursore" :class="(currentPage == lastPage) ? 'disabled' : '' "><span class="page-link" @click="getPosts(currentPage + 1)">Successivo</span></li>
+            </ul>
+        </nav>
         
       </div>
       
@@ -26,15 +34,27 @@ export default {
 
     data(){
         return{
-            posts: []
+            posts: [],
+            currentPage: 1,
+            lastPage: null,
         }
     },
 
     methods: {
-        getPosts() {
-            axios.get('/api/posts').then((response)=>{
+        getPosts(apiPage) {
+            axios.get('/api/posts',{
+                'params':{
+                    'page': apiPage
+                }
+            })
+            .then((response)=>{
             console.log(response);
-            this.posts = response.data.result;
+
+            this.currentPage = response.data.result.current_page;
+
+            this.posts = response.data.result.data;
+
+            this.lastPage = response.data.result.last_page;
         });
         }
     },
@@ -45,6 +65,11 @@ export default {
 }
 </script>
 
+
 <style>
+
+.cursore{
+    cursor: pointer;
+}
 
 </style>
